@@ -38,7 +38,7 @@ The RAG process involves three main steps:
 - Used a tokenizer to help the model with words
 - The documents were retrieved in the data folder
 - I then combined the retriever and tokenizer to generate answers
-- Fine tuning was performed using the hugging face's transformer library and FAlSS for retrieval and I used 5 epochs( this can be changed depending on observed results)
+- Fine tuning was performed using the hugging face's transformer library and FAISS for retrieval and I used 5 epochs( this can be changed depending on observed results)
 - Saved the finetuned model
 
 
@@ -55,3 +55,8 @@ RAG_implementation/
 └── .gitignore
 
 </pre>
+
+# References
+- https://doi.org/10.48550/arXiv.2312.10997
+- https://huggingface.co/docs/transformers/index
+- https://github.com/facebookresearch/faiss
