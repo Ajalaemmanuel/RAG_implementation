@@ -4,8 +4,9 @@ from transformers import RagTokenizer, RagRetriever, RagSequenceForGeneration
 from datasets import Dataset
 import torch
 import pdfplumber
+from torch.utils.data import DataLoader
 
-# Step 1: Load the Q&A dataset 
+# Step 1: Load the Q&A dataset
 def load_qa_dataset(csv_path):
     """
     Load the Q&A dataset from a CSV file.
@@ -38,14 +39,34 @@ def setup_rag_model(data_dir):
     # Load passages from the data directory
     passages = load_data_from_directory(data_dir)
 
+    # Create a dataset from the passages
+    dataset = Dataset.from_dict({"text": [p["text"] for p in passages], "title": [p["title"] for p in passages]})
+
+    # Save the dataset to disk
+    dataset_path = "/content/RAG_implementation/data/dataset"
+    dataset.save_to_disk(dataset_path)
+
     # Initialize the tokenizer, retriever, and model
     tokenizer = RagTokenizer.from_pretrained("facebook/rag-token-base")
     retriever = RagRetriever.from_pretrained(
         "facebook/rag-token-base",
         index_name="custom",
-        passages=passages,
-        index_path=None,  
+        passages_path=dataset_path,
+        index_path=None,  # You need to build and save the index
     )
+
+    # Build and save the index
+    index_path = "/content/RAG_implementation/data/index"
+    dataset.get_index('embeddings').save(index_path)
+
+    # Reinitialize the retriever with the index path
+    retriever = RagRetriever.from_pretrained(
+        "facebook/rag-token-base",
+        index_name="custom",
+        passages_path=dataset_path,
+        index_path=index_path,
+    )
+
     model = RagSequenceForGeneration.from_pretrained("facebook/rag-token-base", retriever=retriever)
 
     return tokenizer, model
@@ -58,13 +79,16 @@ def fine_tune_model(model, tokenizer, dataset):
     # Set up the optimizer
     optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)
 
+    # Create a DataLoader for batching
+    dataloader = DataLoader(dataset, batch_size=8, shuffle=True)
+
     # Fine-tuning loop
-    for epoch in range(5):
+    for epoch in range(3):  # Reduced to 3 epochs for brevity
         print(f"Epoch {epoch + 1}/3")
-        for batch in dataset:
-            # Tokenize the question and answer
-            inputs = tokenizer(batch["question"], return_tensors="pt", max_length=512, truncation=True)
-            labels = tokenizer(batch["answer"], return_tensors="pt", max_length=512, truncation=True)
+        for batch in dataloader:
+            # Tokenize the questions and answers
+            inputs = tokenizer(batch["question"], return_tensors="pt", max_length=512, truncation=True, padding=True)
+            labels = tokenizer(batch["answer"], return_tensors="pt", max_length=512, truncation=True, padding=True)
 
             # Forward pass
             outputs = model(input_ids=inputs["input_ids"], labels=labels["input_ids"])
@@ -82,11 +106,12 @@ def fine_tune_model(model, tokenizer, dataset):
     tokenizer.save_pretrained("fine_tuned_rag_model")
     print("Fine-tuning complete. Model saved to 'fine_tuned_rag_model'.")
 
-# Step 5: Answer questions 
+# Step 5: Answer questions
 def answer_questions(model, tokenizer):
     """
     Allow the user to ask questions and get answers from the RAG model.
     """
+    model.eval()  # Set the model to evaluation mode
     print("RAG Model is ready! Type 'exit' to quit.")
     while True:
         question = input("\nAsk a question: ")
@@ -106,20 +131,9 @@ def answer_questions(model, tokenizer):
 if __name__ == "__main__":
     # Directory containing the PDF files
     pdf_data_dir = '/content/RAG_implementation/data/docs/files/'
-
-    if not os.path.exists(pdf_data_dir):
-        print(f"Directory not found: {pdf_data_dir}")
-    else:
-        print(f"Directory found: {pdf_data_dir}")
-        print("Files in the directory:")
-    for filename in os.listdir(pdf_data_dir):
-        print(filename)
     
     # Path to the Q&A CSV file
-    # qa_csv_path = "RAG_implementation/data/docs/qna_data.csv"  
-    # from google.colab import files
-    # uploaded = files.upload() 
-    qa_csv_path = "qna_data.csv"  
+    qa_csv_path = "/content/RAG_implementation/data/docs/qna_data.csv"  
 
     # Step 1: Load the Q&A dataset
     qa_dataset = load_qa_dataset(qa_csv_path)
