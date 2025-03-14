@@ -4,5 +4,4 @@ torch==2.0.1
 pandas==1.5.3
 pdfplumber==0.9.0
 faiss-cpu #you can change it to faiss-gpu if you are using a gpu
-sentence-transformers
-huggingface_hub==0.13.0
+sentence-transformers>=2.2.2
