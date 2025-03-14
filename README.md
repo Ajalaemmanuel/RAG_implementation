@@ -60,3 +60,4 @@ RAG_implementation/
 - https://doi.org/10.48550/arXiv.2312.10997
 - https://huggingface.co/docs/transformers/index
 - https://github.com/facebookresearch/faiss
+- https://github.com/docugami/KG-RAG-datasets
