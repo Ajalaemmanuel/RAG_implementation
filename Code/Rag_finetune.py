@@ -5,6 +5,7 @@ from datasets import Dataset
 import torch
 import pdfplumber
 from sentence_transformers import SentenceTransformer  # For generating embeddings
+# Updated import for huggingface_hub - using hf_hub_download instead of cached_download
 from huggingface_hub import hf_hub_download
 
 # Step 1: Load the Q&A dataset
