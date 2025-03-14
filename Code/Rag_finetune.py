@@ -108,7 +108,7 @@ if __name__ == "__main__":
     pdf_data_dir = "data/docs/files/"
 
     # Path to the Q&A CSV file
-    qa_csv_path = "data/docs/qna_data.csv.csv"  
+    qa_csv_path = "data/docs/qna_data.csv"  
 
     # Step 1: Load the Q&A dataset
     qa_dataset = load_qa_dataset(qa_csv_path)
