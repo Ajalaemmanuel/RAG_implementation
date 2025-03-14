@@ -4,6 +4,7 @@ from transformers import RagTokenizer, RagRetriever, RagSequenceForGeneration
 from datasets import Dataset
 import torch
 import pdfplumber
+from sentence_transformers import SentenceTransformer  # For generating embeddings
 
 # Step 1: Load the Q&A dataset
 def load_qa_dataset(csv_path):
@@ -45,9 +46,21 @@ def setup_rag_model(data_dir):
     dataset_path = "/content/RAG_implementation/data/dataset"
     dataset.save_to_disk(dataset_path)
 
-    # Build and save the index
+    # Generate embeddings for the passages
+    print("Generating embeddings for the passages...")
+    embedder = SentenceTransformer('all-MiniLM-L6-v2')  # Use a pre-trained sentence transformer
+    embeddings = embedder.encode([p["text"] for p in passages])
+
+    # Add embeddings to the dataset
+    dataset = dataset.add_column("embeddings", embeddings)
+
+    # Create the FAISS index
+    print("Creating FAISS index...")
+    dataset.add_faiss_index(column="embeddings", index_name="embeddings")
+
+    # Save the index to disk
     index_path = "/content/RAG_implementation/data/index"
-    dataset.get_index('embeddings').save(index_path)
+    dataset.get_index("embeddings").save(index_path)
 
     # Initialize the tokenizer, retriever, and model
     tokenizer = RagTokenizer.from_pretrained("facebook/rag-token-base")
