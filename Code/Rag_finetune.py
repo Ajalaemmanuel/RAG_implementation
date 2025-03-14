@@ -105,10 +105,10 @@ def answer_questions(model, tokenizer):
 # Main function
 if __name__ == "__main__":
     # Directory containing the PDF files
-    pdf_data_dir = "RAG_implementation/data/docs/files/"
+    pdf_data_dir = r"RAG_implementation/data/docs/files/"
 
     # Path to the Q&A CSV file
-    qa_csv_path = "RAG_implementation/data/docs/qna_data.csv"  
+    qa_csv_path = r"RAG_implementation/data/docs/qna_data.csv"  
 
     # Step 1: Load the Q&A dataset
     qa_dataset = load_qa_dataset(qa_csv_path)
