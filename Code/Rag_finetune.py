@@ -105,7 +105,7 @@ def answer_questions(model, tokenizer):
 # Main function
 if __name__ == "__main__":
     # Directory containing the PDF files
-    pdf_data_dir = 'RAG_implementation/data/docs/files/'
+    pdf_data_dir = '/content/RAG_implementation/data/docs/files/'
 
     if not os.path.exists(pdf_data_dir):
         print(f"Directory not found: {pdf_data_dir}")
