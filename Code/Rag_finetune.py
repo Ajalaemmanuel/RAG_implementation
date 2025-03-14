@@ -107,6 +107,14 @@ if __name__ == "__main__":
     # Directory containing the PDF files
     pdf_data_dir = 'RAG_implementation/data/docs/files/'
 
+    if not os.path.exists(pdf_data_dir):
+        print(f"Directory not found: {pdf_data_dir}")
+    else:
+        print(f"Directory found: {pdf_data_dir}")
+        print("Files in the directory:")
+    for filename in os.listdir(pdf_data_dir):
+        print(filename)
+    
     # Path to the Q&A CSV file
     # qa_csv_path = "RAG_implementation/data/docs/qna_data.csv"  
     # from google.colab import files
