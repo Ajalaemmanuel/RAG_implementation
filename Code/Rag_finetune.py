@@ -109,8 +109,8 @@ if __name__ == "__main__":
 
     # Path to the Q&A CSV file
     # qa_csv_path = "RAG_implementation/data/docs/qna_data.csv"  
-    from google.colab import files
-    uploaded = files.upload() 
+    # from google.colab import files
+    # uploaded = files.upload() 
     qa_csv_path = "qna_data.csv"  
 
     # Step 1: Load the Q&A dataset
