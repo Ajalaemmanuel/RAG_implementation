@@ -9,6 +9,7 @@ from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
 
+
 # Step 1: Load the Q&A dataset
 def load_qa_dataset(csv_path):
     """
