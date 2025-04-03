@@ -4,8 +4,9 @@ from transformers import RagTokenizer, RagRetriever, RagSequenceForGeneration
 from datasets import Dataset
 import torch
 import pdfplumber
-from sentence_transformers import SentenceTransformer  # For generating embeddings
-# Updated import for huggingface_hub - using hf_hub_download instead of cached_download
+from sentence_transformers import SentenceTransformer  # helps with embeddings
+
+
 from huggingface_hub import hf_hub_download
 
 # Step 1: Load the Q&A dataset
@@ -108,7 +109,7 @@ def fine_tune_model(model, tokenizer, dataset):
     tokenizer.save_pretrained("fine_tuned_rag_model")
     print("Fine-tuning complete. Model saved to 'fine_tuned_rag_model'.")
 
-# Step 5: Answer questions
+# Step 5: Answer 
 def answer_questions(model, tokenizer):
     """
     Allow the user to ask questions and get answers from the RAG model.
@@ -122,7 +123,7 @@ def answer_questions(model, tokenizer):
         # Tokenize the question
         inputs = tokenizer(question, return_tensors="pt")
 
-        # Generate the answer
+        # Generate answer
         outputs = model.generate(input_ids=inputs["input_ids"])
         answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
@@ -130,22 +131,16 @@ def answer_questions(model, tokenizer):
 
 # Main function
 if __name__ == "__main__":
-    # Directory containing the PDF files
     pdf_data_dir = '/content/RAG_implementation/data/docs/files/'
     
-    # Path to the Q&A CSV file
     qa_csv_path = "/content/RAG_implementation/data/docs/qna_data.csv"  
 
-    # Step 1: Load the Q&A dataset
     qa_dataset = load_qa_dataset(qa_csv_path)
 
-    # Step 2: Set up the RAG model
     print("Setting up the RAG model...")
     tokenizer, model = setup_rag_model(pdf_data_dir)
 
-    # Step 3: Fine-tune the model
     print("Fine-tuning the model...")
     fine_tune_model(model, tokenizer, qa_dataset)
 
-    # Step 4: Answer questions interactively
     answer_questions(model, tokenizer)
